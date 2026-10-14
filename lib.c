@@ -2,6 +2,8 @@
 #include <stdlib.h>
 #include "lib.h"
 
+const size_t BASE_CAPACITY = 4;
+
 void vec_init(IntVector *vec)
 {
     vec->capacity = 0;
@@ -15,11 +17,19 @@ void vec_init(IntVector *vec)
 /// @return 成功したか否か
 bool vec_push(IntVector *vec, int value)
 {
-    if (vec->data == NULL)
+    // capacityについて条件を問う方が自然。
+    // なぜならcapacityはバロメーターそのもの，dataは管理対象だから。
+    if (vec->capacity == 0)
     {
-        vec->capacity = 4;
+        // mallocの失敗を考慮しよう。
+        vec->data = malloc(sizeof(int) * BASE_CAPACITY);
+        if (vec->data == NULL)
+        {
+            return false;
+        }
+
+        vec->capacity = BASE_CAPACITY;
         vec->size = 0;
-        vec->data = malloc(sizeof(int) * vec->capacity);
     }
 
     if (vec->size == vec->capacity)
@@ -27,7 +37,6 @@ bool vec_push(IntVector *vec, int value)
         void *ret = realloc(vec->data, sizeof(int) * vec->capacity * 2);
         if (ret == NULL)
         {
-            fprintf(stderr, "Failed to re-allocate memory");
             return false;
         }
         vec->data = ret;
@@ -52,10 +61,9 @@ bool vec_pop(IntVector *vec, int *out)
 bool vec_get(const IntVector *vec,
              size_t index, int *out)
 {
-    bool inRange = index < vec->size;
-    if (!inRange)
+    bool in_range = index < vec->size;
+    if (!in_range)
     {
-        fprintf(stderr, "Invalid index");
         return false;
     }
 
@@ -65,9 +73,7 @@ bool vec_get(const IntVector *vec,
 
 void vec_free(IntVector *vec)
 {
-    if (vec->data != NULL)
-    {
-        free(vec->data);
-        vec_init(vec);
-    }
+    // freeに関してはあえてNULLか否かを確認する必要がない
+    free(vec->data);
+    vec_init(vec);
 }

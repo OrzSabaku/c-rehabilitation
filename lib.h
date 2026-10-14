@@ -17,3 +17,5 @@ bool vec_pop(IntVector *vec, int *out);
 bool vec_get(const IntVector *vec,
              size_t index, int *out);
 void vec_free(IntVector *vec);
+
+extern const size_t BASE_CAPACITY;
