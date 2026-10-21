@@ -22,14 +22,14 @@ bool vec_push(IntVector *vec, int value)
     if (vec->capacity == 0)
     {
         // mallocの失敗を考慮しよう。
-        vec->data = malloc(sizeof(int) * BASE_CAPACITY);
-        if (vec->data == NULL)
+        void *ret = malloc(sizeof(int) * BASE_CAPACITY);
+        if (ret == NULL)
         {
             return false;
         }
 
+        vec->data = ret;
         vec->capacity = BASE_CAPACITY;
-        vec->size = 0;
     }
 
     if (vec->size == vec->capacity)
