@@ -1,3 +1,4 @@
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include "lib.h"
@@ -30,6 +31,11 @@ bool vec_push(IntVector *vec, int value)
 
         vec->data = ret;
         vec->capacity = BASE_CAPACITY;
+    }
+
+    if (vec->capacity > SIZE_MAX / 2 / sizeof(int))
+    {
+      return false;
     }
 
     if (vec->size == vec->capacity)
