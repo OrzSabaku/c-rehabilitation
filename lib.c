@@ -4,12 +4,19 @@
 #include "lib.h"
 
 const size_t BASE_CAPACITY = 4;
+const size_t BASE_MALTIPLIER = 2;
 
 void vec_init(IntVector *vec)
 {
     vec->capacity = 0;
     vec->size = 0;
     vec->data = NULL;
+}
+
+/// @brief ヤバいときはtrueを返します
+bool _validate_size_t_overflow(IntVector *vec)
+{
+    return vec->capacity > SIZE_MAX / BASE_MALTIPLIER / sizeof(int);
 }
 
 /// @brief vecへの値のプッシュおよびメモリの管理
@@ -33,20 +40,20 @@ bool vec_push(IntVector *vec, int value)
         vec->capacity = BASE_CAPACITY;
     }
 
-    if (vec->capacity > SIZE_MAX / 2 / sizeof(int))
-    {
-      return false;
-    }
-
     if (vec->size == vec->capacity)
     {
-        void *ret = realloc(vec->data, sizeof(int) * vec->capacity * 2);
+        if (_validate_size_t_overflow(vec))
+        {
+            return false;
+        }
+
+        void *ret = realloc(vec->data, sizeof(int) * vec->capacity * BASE_MALTIPLIER);
         if (ret == NULL)
         {
             return false;
         }
         vec->data = ret;
-        vec->capacity *= 2;
+        vec->capacity *= BASE_MALTIPLIER;
     }
 
     vec->data[vec->size++] = value;

@@ -20,3 +20,4 @@ bool vec_get(const IntVector *vec,
 void vec_free(IntVector *vec);
 
 extern const size_t BASE_CAPACITY;
+extern const size_t BASE_MULTIPLIR;
